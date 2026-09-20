@@ -1,3 +1,6 @@
 <Solution>
-  <Project Path="DigitalMarketplace/DigitalMarketplace.csproj" />
+  <Project Path="DigitalMarketplace.Application/DigitalMarketplace.Application.csproj" />
+  <Project Path="DigitalMarketplace.Domain/DigitalMarketplace.Domain.csproj" />
+  <Project Path="DigitalMarketplace.Infrastructure/DigitalMarketplace.Infrastructure.csproj" />
+  <Project Path="DigitalMarketplace/DigitalMarketplace.API.csproj" />
 </Solution>
