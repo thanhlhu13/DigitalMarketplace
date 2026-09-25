@@ -44,6 +44,9 @@ public class ExceptionHandlingMiddleware
             InvalidOperationException =>
                 (int)HttpStatusCode.BadRequest,
 
+            KeyNotFoundException =>
+                (int)HttpStatusCode.NotFound,
+
             _ =>
                 (int)HttpStatusCode.InternalServerError
         };
@@ -57,6 +60,9 @@ public class ExceptionHandlingMiddleware
                     exception.Message,
 
                 InvalidOperationException =>
+                    exception.Message,
+
+                KeyNotFoundException =>
                     exception.Message,
 
                 _ =>
