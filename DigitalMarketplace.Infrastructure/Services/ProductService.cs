@@ -1,4 +1,5 @@
-﻿using DigitalMarketplace.Application.DTOs.Products;
+﻿using DigitalMarketplace.Application.DTOs.Common;
+using DigitalMarketplace.Application.DTOs.Products;
 using DigitalMarketplace.Application.Interfaces;
 using DigitalMarketplace.Domain.Entities;
 using DigitalMarketplace.Infrastructure.Data;
@@ -263,5 +264,106 @@ public class ProductService : IProductService
         _context.Products.Remove(product);
 
         await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Retrieves products with optional search, category filtering,
+    /// active status filtering, sorting, and pagination.
+    /// </summary>
+    /// <param name="request">
+    /// Search, filter, sorting, and pagination parameters.
+    /// </param>
+    /// <returns>A paginated list of products.</returns>
+    public async Task<PagedResult<ProductResponse>> GetPagedAsync(
+        ProductQueryRequest request)
+    {
+        // Build the query without executing it immediately.
+        var query = _context.Products
+            .AsNoTracking()
+            .AsQueryable();
+
+        // Search by product name or slug.
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var search = request.Search.Trim();
+
+            query = query.Where(x =>
+                x.Name.Contains(search) ||
+                x.Slug.Contains(search));
+        }
+
+        // Filter by category.
+        if (request.CategoryId.HasValue)
+        {
+            query = query.Where(x =>
+                x.CategoryId == request.CategoryId.Value);
+        }
+
+        // Filter by active status.
+        if (request.IsActive.HasValue)
+        {
+            query = query.Where(x =>
+                x.IsActive == request.IsActive.Value);
+        }
+
+        // Apply sorting.
+        var sortBy = request.SortBy?.Trim().ToLowerInvariant();
+        var sortOrder = request.SortOrder?.Trim().ToLowerInvariant();
+
+        var isDescending = sortOrder == "desc";
+
+        query = sortBy switch
+        {
+            "name" => isDescending
+                ? query.OrderByDescending(x => x.Name)
+                : query.OrderBy(x => x.Name),
+
+            "price" => isDescending
+                ? query.OrderByDescending(x => x.Price)
+                : query.OrderBy(x => x.Price),
+
+            "stock" => isDescending
+                ? query.OrderByDescending(x => x.StockQuantity)
+                : query.OrderBy(x => x.StockQuantity),
+
+            _ => isDescending
+                ? query.OrderByDescending(x => x.CreatedAt)
+                : query.OrderBy(x => x.CreatedAt)
+        };
+
+        // Get the total number of matching records before pagination.
+        var totalItems = await query.CountAsync();
+
+        var totalPages = (int)Math.Ceiling(
+            totalItems / (double)request.PageSize);
+
+        // Apply pagination at the database level.
+        var products = await query
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .Select(x => new ProductResponse
+            {
+                Id = x.Id,
+                CategoryId = x.CategoryId,
+                CategoryName = x.Category.Name,
+                Name = x.Name,
+                Slug = x.Slug,
+                Description = x.Description,
+                Price = x.Price,
+                StockQuantity = x.StockQuantity,
+                IsActive = x.IsActive,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt
+            })
+            .ToListAsync();
+
+        return new PagedResult<ProductResponse>
+        {
+            Items = products,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            TotalItems = totalItems,
+            TotalPages = totalPages
+        };
     }
 }

@@ -1,4 +1,5 @@
-﻿using DigitalMarketplace.Application.DTOs.Products;
+﻿using DigitalMarketplace.Application.DTOs.Common;
+using DigitalMarketplace.Application.DTOs.Products;
 using DigitalMarketplace.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,24 @@ public class ProductController : ControllerBase
         var products = await _productService.GetAllAsync();
 
         return Ok(products);
+    }
+
+    /// <summary>
+    /// Gets a paginated list of products with optional search, filtering, and sorting.
+    /// </summary>
+    /// <param name="request">
+    /// Pagination, search, filter, and sorting parameters.
+    /// </param>
+    /// <returns>A paginated list of products.</returns>
+    [HttpGet("paged")]
+    [AllowAnonymous]
+    public async Task<ActionResult<PagedResult<ProductResponse>>> GetPaged(
+        [FromQuery] ProductQueryRequest request)
+    {
+        // Get paginated products with search, filter, and sorting options.
+        var result = await _productService.GetPagedAsync(request);
+
+        return Ok(result);
     }
 
     /// <summary>
@@ -84,4 +103,5 @@ public class ProductController : ControllerBase
 
         return NoContent();
     }
+
 }

@@ -133,9 +133,14 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request)
     {
-        // Find the user by email.
+        // The login field can contain either the username or email.
+        // This allows users to authenticate using either credential.
+        var login = request.Email.Trim();
+
         var user = await _context.Users
-            .FirstOrDefaultAsync(x => x.Email == request.Email);
+            .FirstOrDefaultAsync(x =>
+                x.Username == login ||
+                x.Email == login);
 
         // Do not reveal whether the email exists.
         if (user == null || !_passwordHasher.Verify(

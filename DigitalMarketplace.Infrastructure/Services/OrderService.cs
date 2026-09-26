@@ -247,21 +247,20 @@ public class OrderService : IOrderService
             throw new KeyNotFoundException(
                 "Order does not exist.");
         }
-
-        // Keep the allowed status values controlled by the backend.
-        var allowedStatuses = new[]
+        var allowedTransitions = new Dictionary<string, string[]>
         {
-            "Pending",
-            "Confirmed",
-            "Processing",
-            "Completed",
-            "Cancelled"
+            ["Pending"] = ["Confirmed", "Cancelled"],
+            ["Confirmed"] = ["Processing", "Cancelled"],
+            ["Processing"] = ["Completed"],
+            ["Completed"] = [],
+            ["Cancelled"] = []
         };
 
-        if (!allowedStatuses.Contains(request.Status))
+        if (!allowedTransitions.TryGetValue(order.Status, out var allowedStatuses) ||
+            !allowedStatuses.Contains(request.Status))
         {
             throw new InvalidOperationException(
-                "Invalid order status.");
+                $"Order cannot be changed from '{order.Status}' to '{request.Status}'.");
         }
 
         order.Status = request.Status;
@@ -322,5 +321,105 @@ public class OrderService : IOrderService
     {
         return $"ORD-{DateTime.UtcNow:yyyyMMddHHmmss}-{Guid.NewGuid():N}"
             .ToUpperInvariant();
+    }
+
+    public async Task CancelAsync(
+    long userId,
+    long orderId)
+    {
+        // Start a database transaction to keep wallet,
+        // stock, and order changes consistent.
+        await using var transaction =
+            await _context.Database.BeginTransactionAsync();
+
+        try
+        {
+            // Find the order belonging to the current user.
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(x =>
+                    x.Id == orderId &&
+                    x.UserId == userId);
+
+            if (order == null)
+            {
+                throw new KeyNotFoundException(
+                    "Order does not exist.");
+            }
+
+            // Only pending orders can be cancelled.
+            if (order.Status != "Pending")
+            {
+                throw new InvalidOperationException(
+                    "Only pending orders can be cancelled.");
+            }
+
+            // Get all items belonging to the order.
+            var orderItems = await _context.OrderItems
+                .Where(x => x.OrderId == order.Id)
+                .ToListAsync();
+
+            // Get the user's wallet.
+            var wallet = await _context.Wallets
+                .FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (wallet == null)
+            {
+                throw new InvalidOperationException(
+                    "Wallet not found.");
+            }
+
+            var balanceBefore = wallet.Balance;
+            var balanceAfter =
+                balanceBefore + order.TotalAmount;
+
+            // Refund the order amount to the user's wallet.
+            wallet.Balance = balanceAfter;
+            wallet.UpdatedAt = DateTime.UtcNow;
+
+            // Restore product stock.
+            foreach (var orderItem in orderItems)
+            {
+                var product = await _context.Products
+                    .FirstOrDefaultAsync(x =>
+                        x.Id == orderItem.ProductId);
+
+                if (product != null)
+                {
+                    product.StockQuantity += orderItem.Quantity;
+                }
+            }
+
+            // Update the order status.
+            order.Status = "Cancelled";
+            order.UpdatedAt = DateTime.UtcNow;
+
+            // Create a wallet transaction for the refund.
+            var walletTransaction = new WalletTransaction
+            {
+                WalletId = wallet.Id,
+                UserId = userId,
+                Type = "Refund",
+                Amount = order.TotalAmount,
+                BalanceBefore = balanceBefore,
+                BalanceAfter = balanceAfter,
+                ReferenceType = "Order",
+                ReferenceId = order.Id,
+                Description = $"Refund for order {order.OrderCode}",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.WalletTransactions.Add(walletTransaction);
+
+            await _context.SaveChangesAsync();
+
+            // Commit all changes together.
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            // Roll back all changes if any operation fails.
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 }

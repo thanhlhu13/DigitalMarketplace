@@ -8,11 +8,13 @@ public interface IOrderService
 
     Task<List<OrderResponse>> GetMyOrdersAsync(long userId);
 
-    Task<OrderResponse> GetByIdAsync(
-        long userId,
-        long orderId);
+    Task<OrderResponse> GetByIdAsync(long userId, long orderId);
 
     Task UpdateStatusAsync(
         long orderId,
         UpdateOrderStatusRequest request);
+
+    Task CancelAsync(
+        long userId,
+        long orderId);
 }

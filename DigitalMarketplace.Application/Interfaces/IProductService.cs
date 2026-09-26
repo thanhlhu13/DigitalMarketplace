@@ -2,6 +2,8 @@
 
 namespace DigitalMarketplace.Application.Interfaces;
 
+using DigitalMarketplace.Application.DTOs.Common;
+
 public interface IProductService
 {
     Task<List<ProductResponse>> GetAllAsync();
@@ -15,4 +17,7 @@ public interface IProductService
         UpdateProductRequest request);
 
     Task DeleteAsync(long id);
+
+    Task<PagedResult<ProductResponse>> GetPagedAsync(
+    ProductQueryRequest request);
 }

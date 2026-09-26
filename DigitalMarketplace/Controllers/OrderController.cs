@@ -93,4 +93,16 @@ public class OrderController : ControllerBase
 
         return userId;
     }
+
+    [HttpPut("{id:long}/cancel")]
+    public async Task<IActionResult> Cancel(long id)
+    {
+        var userId = GetCurrentUserId();
+
+        await _orderService.CancelAsync(
+            userId,
+            id);
+
+        return NoContent();
+    }
 }
