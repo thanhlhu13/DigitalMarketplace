@@ -1,0 +1,419 @@
+<section class="products-page">
+
+  <div class="products-container">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a routerLink="/">Trang chủ</a>
+      <span>/</span>
+      <span>Sản phẩm</span>
+    </div>
+
+
+    <!-- Page heading -->
+    <div class="page-heading">
+
+      <div>
+        <span class="section-label">
+          HLT SHOP
+        </span>
+
+        <h1>
+          Sản phẩm
+        </h1>
+
+        <p>
+          Khám phá các sản phẩm cầu lông dành cho bạn
+        </p>
+      </div>
+
+      <div class="product-count">
+        {{ filteredProducts.length }} sản phẩm
+      </div>
+
+    </div>
+
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+
+      <!-- Search -->
+      <div class="search-box">
+
+        <span class="search-icon">
+          ⌕
+        </span>
+
+        <input
+          type="text"
+          placeholder="Tìm kiếm sản phẩm..."
+          [(ngModel)]="searchKeyword"
+          (input)="onSearch()"
+        />
+
+        @if (searchKeyword) {
+
+          <button
+            type="button"
+            class="clear-search"
+            (click)="searchKeyword = ''; onSearch()">
+
+            ×
+
+          </button>
+
+        }
+
+      </div>
+
+
+      <!-- Sort -->
+      <div class="sort-box">
+
+        <label for="sort">
+          Sắp xếp:
+        </label>
+
+        <select
+          id="sort"
+          [(ngModel)]="sortOption"
+          (change)="onSortChange()">
+
+          <option value="newest">
+            Mới nhất
+          </option>
+
+          <option value="priceAsc">
+            Giá thấp đến cao
+          </option>
+
+          <option value="priceDesc">
+            Giá cao đến thấp
+          </option>
+
+          <option value="rating">
+            Đánh giá cao nhất
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <!-- Main content -->
+    <div class="products-layout">
+
+
+      <!-- Category sidebar -->
+      <aside class="category-sidebar">
+
+        <div class="sidebar-title">
+          Danh mục
+        </div>
+
+        <div class="category-list">
+
+          @for (
+            category of categories;
+            track category
+          ) {
+
+            <button
+              type="button"
+              class="category-item"
+              [class.active]="
+                selectedCategory === category
+              "
+              (click)="selectCategory(category)">
+
+              <span>
+                {{ category }}
+              </span>
+
+              @if (
+                selectedCategory === category
+              ) {
+
+                <span class="category-arrow">
+                  →
+                </span>
+
+              }
+
+            </button>
+
+          }
+
+        </div>
+
+
+        <!-- Small promo -->
+        <div class="sidebar-promo">
+
+          <div class="promo-icon">
+            🏸
+          </div>
+
+          <strong>
+            HLT Shop
+          </strong>
+
+          <p>
+            Trang bị tốt hơn,
+            chơi tốt hơn.
+          </p>
+
+        </div>
+
+      </aside>
+
+
+      <!-- Product area -->
+      <div class="products-area">
+
+
+        <!-- Product grid -->
+        @if (pagedProducts.length > 0) {
+
+          <div class="product-grid">
+
+            @for (
+              product of pagedProducts;
+              track product.id
+            ) {
+
+              <article class="product-card">
+
+
+                <!-- Image -->
+                <div
+                  class="product-image-wrapper"
+                  (click)="viewProduct(product)">
+
+                  @if (product.badge) {
+
+                    <span
+                      class="product-badge"
+                      [class.sale-badge]="
+                        product.badge === 'Sale'
+                      "
+                      [class.hot-badge]="
+                        product.badge === 'Hot'
+                      ">
+
+                      {{ product.badge }}
+
+                    </span>
+
+                  }
+
+
+                  @if (product.oldPrice) {
+
+                    <span class="discount-badge">
+
+                      -{{ getDiscountPercent(product) }}%
+
+                    </span>
+
+                  }
+
+
+                  <button
+                    type="button"
+                    class="wishlist-button"
+                    aria-label="Thêm vào yêu thích"
+                    (click)="
+                      $event.stopPropagation();
+                      toggleWishlist(product)
+                    ">
+
+                    ♡
+
+                  </button>
+
+
+                  <img
+                    [src]="product.image"
+                    [alt]="product.name"
+                  />
+
+
+                  <!-- Quick add -->
+                  <button
+                    type="button"
+                    class="quick-add"
+                    (click)="
+                      $event.stopPropagation();
+                      addToCart(product)
+                    ">
+
+                    <span>
+                      🛒
+                    </span>
+
+                    Thêm vào giỏ
+
+                  </button>
+
+                </div>
+
+
+                <!-- Product info -->
+                <div class="product-info">
+
+                  <span class="product-category">
+                    {{ product.category }}
+                  </span>
+
+                  <h2
+                    class="product-name"
+                    (click)="viewProduct(product)">
+
+                    {{ product.name }}
+
+                  </h2>
+
+
+                  <!-- Rating -->
+                  <div class="product-rating">
+
+                    <span class="stars">
+                      {{ getStars(product.rating) }}
+                    </span>
+
+                    <span class="rating-value">
+                      {{ product.rating }}
+                    </span>
+
+                    <span class="review-count">
+                      ({{ product.reviews }})
+                    </span>
+
+                  </div>
+
+
+                  <!-- Price -->
+                  <div class="product-price">
+
+                    <span class="current-price">
+                      {{ formatPrice(product.price) }}
+                    </span>
+
+                    @if (product.oldPrice) {
+
+                      <span class="old-price">
+                        {{ formatPrice(product.oldPrice) }}
+                      </span>
+
+                    }
+
+                  </div>
+
+                </div>
+
+              </article>
+
+            }
+
+          </div>
+
+        }
+
+
+        <!-- Empty state -->
+        @if (pagedProducts.length === 0) {
+
+          <div class="empty-state">
+
+            <div class="empty-icon">
+              🔍
+            </div>
+
+            <h2>
+              Không tìm thấy sản phẩm
+            </h2>
+
+            <p>
+              Hãy thử tìm kiếm với từ khóa khác
+              hoặc chọn danh mục khác.
+            </p>
+
+            <button
+              type="button"
+              (click)="
+                searchKeyword = '';
+                selectedCategory = 'Tất cả';
+                currentPage = 1;
+              ">
+
+              Xem tất cả sản phẩm
+
+            </button>
+
+          </div>
+
+        }
+
+
+        <!-- Pagination -->
+        @if (totalPages > 1) {
+
+          <div class="pagination">
+
+            <button
+              type="button"
+              class="page-button previous"
+              [disabled]="currentPage === 1"
+              (click)="previousPage()">
+
+              ←
+
+            </button>
+
+
+            @for (
+              page of paginationPages;
+              track page
+            ) {
+
+              <button
+                type="button"
+                class="page-button"
+                [class.active]="
+                  currentPage === page
+                "
+                (click)="changePage(page)">
+
+                {{ page }}
+
+              </button>
+
+            }
+
+
+            <button
+              type="button"
+              class="page-button next"
+              [disabled]="
+                currentPage === totalPages
+              "
+              (click)="nextPage()">
+
+              →
+
+            </button>
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>

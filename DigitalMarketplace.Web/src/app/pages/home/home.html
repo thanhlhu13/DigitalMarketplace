@@ -1,0 +1,307 @@
+<section class="hero">
+
+  <div class="hero-container">
+
+    <div class="hero-content">
+
+      <span class="hero-label">
+        HLT SPORT COLLECTION
+      </span>
+
+      <h1>
+        Nâng tầm<br>
+        <strong>trận đấu</strong> của bạn
+      </h1>
+
+      <p>
+        Khám phá bộ sưu tập dụng cụ cầu lông
+        được lựa chọn dành cho người chơi hiện đại.
+      </p>
+
+      <div class="hero-actions">
+        <a href="/products" class="primary-button">
+          Khám phá sản phẩm
+        </a>
+
+        <a href="/categories/vot-cau-long" class="secondary-button">
+          Xem vợt cầu lông
+        </a>
+      </div>
+
+    </div>
+
+    <div class="hero-visual">
+
+      <div class="hero-circle"></div>
+
+      <div class="hero-product">
+        <span class="racket-icon">🏸</span>
+      </div>
+
+      <div class="floating-card card-top">
+        <strong>500+</strong>
+        <span>Sản phẩm</span>
+      </div>
+
+      <div class="floating-card card-bottom">
+        <span class="check">✓</span>
+        <div>
+          <strong>Chất lượng</strong>
+          <span>Được kiểm tra</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="categories-section">
+
+  <div class="section-container">
+
+    <div class="section-header">
+
+      <div>
+        <span class="section-label">
+          DANH MỤC
+        </span>
+
+        <h2>
+          Tìm sản phẩm phù hợp
+        </h2>
+      </div>
+
+      <a href="/products" class="view-all">
+        Xem tất cả →
+      </a>
+
+    </div>
+
+
+    <div class="category-grid">
+
+      @for (category of categories; track category.slug) {
+
+        <a
+          class="category-card"
+          [href]="'/categories/' + category.slug">
+
+          <div class="category-icon">
+            {{ category.icon }}
+          </div>
+
+          <h3>
+            {{ category.name }}
+          </h3>
+
+          <span>
+            {{ category.productCount }} sản phẩm
+          </span>
+
+        </a>
+
+      }
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="products-section">
+
+  <div class="section-container">
+
+    <div class="section-header">
+
+      <div>
+
+        <span class="section-label">
+          ĐƯỢC YÊU THÍCH
+        </span>
+
+        <h2>
+          Sản phẩm nổi bật
+        </h2>
+
+      </div>
+
+      <a href="/products" class="view-all">
+        Xem tất cả →
+      </a>
+
+    </div>
+
+
+    <div class="product-grid">
+
+      @for (product of featuredProducts; track product.id) {
+
+        <article class="product-card">
+
+          <div class="product-image">
+
+            @if (product.badge) {
+              <span class="product-badge">
+                {{ product.badge }}
+              </span>
+            }
+
+            <button
+              class="favorite-button"
+              type="button">
+              ♡
+            </button>
+
+            <img
+              [src]="product.image"
+              [alt]="product.name">
+
+            <button
+              class="quick-cart"
+              type="button">
+              Thêm vào giỏ
+            </button>
+
+          </div>
+
+
+          <div class="product-info">
+
+            <span class="product-category">
+              {{ product.category }}
+            </span>
+
+            <h3>
+              {{ product.name }}
+            </h3>
+
+            <div class="product-rating">
+
+              <span class="stars">
+                {{ getStars(product.rating) }}
+              </span>
+
+              <span class="review-count">
+                ({{ product.reviews }})
+              </span>
+
+            </div>
+
+
+            <div class="product-price">
+
+              <span class="current-price">
+                {{ formatPrice(product.price) }}
+              </span>
+
+              @if (product.oldPrice) {
+                <span class="old-price">
+                  {{ formatPrice(product.oldPrice) }}
+                </span>
+              }
+
+            </div>
+
+          </div>
+
+        </article>
+
+      }
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="promo-section">
+
+  <div class="promo-container">
+
+    <div class="promo-content">
+
+      <span class="promo-label">
+        HLT SHOP MEMBER
+      </span>
+
+      <h2>
+        Ưu đãi dành riêng<br>
+        cho thành viên
+      </h2>
+
+      <p>
+        Đăng ký tài khoản để nhận thông tin
+        khuyến mãi và ưu đãi mới nhất.
+      </p>
+
+      <a href="/register" class="promo-button">
+        Đăng ký ngay
+      </a>
+
+    </div>
+
+    <div class="promo-decoration">
+      <span>🏸</span>
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="features-section">
+
+  <div class="section-container">
+
+    <div class="features-grid">
+
+      <div class="feature-item">
+        <div class="feature-icon">🚚</div>
+
+        <div>
+          <h3>Giao hàng nhanh</h3>
+          <p>Đóng gói cẩn thận và giao hàng tận nơi.</p>
+        </div>
+      </div>
+
+
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+
+        <div>
+          <h3>Sản phẩm chất lượng</h3>
+          <p>Sản phẩm được kiểm tra trước khi giao.</p>
+        </div>
+      </div>
+
+
+      <div class="feature-item">
+        <div class="feature-icon">↻</div>
+
+        <div>
+          <h3>Hỗ trợ đổi trả</h3>
+          <p>Chính sách đổi trả rõ ràng và thuận tiện.</p>
+        </div>
+      </div>
+
+
+      <div class="feature-item">
+        <div class="feature-icon">♧</div>
+
+        <div>
+          <h3>Hỗ trợ khách hàng</h3>
+          <p>Luôn sẵn sàng hỗ trợ khi bạn cần.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>

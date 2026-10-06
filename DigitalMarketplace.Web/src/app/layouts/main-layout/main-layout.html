@@ -1,0 +1,211 @@
+<div class="shop-layout">
+
+<header class="header">
+
+  <div class="header-container">
+
+    <!-- Logo -->
+    <a class="logo" routerLink="/">
+
+      <span class="logo-mark">
+        H
+      </span>
+
+      <span class="logo-text">
+        HLT
+        <small>SHOP</small>
+      </span>
+
+    </a>
+
+
+    <!-- Main navigation -->
+    <nav class="navigation">
+
+      <a
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        Trang chủ
+      </a>
+
+      <a
+        routerLink="/products"
+        routerLinkActive="active">
+        Sản phẩm
+      </a>
+
+      <a
+        routerLink="/categories/vot-cau-long"
+        routerLinkActive="active">
+        Vợt cầu lông
+      </a>
+
+      <a
+        routerLink="/categories/giay-cau-long"
+        routerLinkActive="active">
+        Giày
+      </a>
+
+      <a
+        routerLink="/categories/quan-ao-cau-long"
+        routerLinkActive="active">
+        Quần áo
+      </a>
+
+      <a
+        class="sale-link"
+        routerLink="/products">
+        Khuyến mãi
+        <span>HOT</span>
+      </a>
+
+    </nav>
+
+
+    <!-- Header actions -->
+    <div class="header-actions">
+
+      <!-- Search -->
+      <button
+        class="search-button"
+        type="button">
+
+        <span class="search-icon">
+          ⌕
+        </span>
+
+        <span class="search-text">
+          Tìm kiếm sản phẩm...
+        </span>
+
+      </button>
+
+
+      <!-- Wishlist -->
+      <button
+        class="header-icon"
+        type="button"
+        aria-label="Wishlist">
+
+        ♡
+
+      </button>
+
+
+      <!-- Cart -->
+      <a
+        class="header-icon cart-icon"
+        routerLink="/cart"
+        aria-label="Shopping cart">
+
+        🛒
+
+        <span class="cart-count">
+          0
+        </span>
+
+      </a>
+
+
+      <!-- Account -->
+      <a
+        class="account-button"
+        routerLink="/login">
+
+        <span class="account-icon">
+          👤
+        </span>
+
+        <span class="account-text">
+          <small>Tài khoản</small>
+          Đăng nhập
+        </span>
+
+      </a>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+  <main class="main-content">
+
+    <router-outlet />
+
+  </main>
+
+
+  <footer class="footer">
+
+    <div class="footer-container">
+
+      <div class="footer-column brand-column">
+
+        <div class="footer-logo">
+          HLT Shop
+        </div>
+
+        <p>
+          Cửa hàng cầu lông với các sản phẩm
+          dành cho người chơi ở mọi trình độ.
+        </p>
+
+      </div>
+
+
+      <div class="footer-column">
+
+        <h3>HLT Shop</h3>
+
+        <a href="#">Về chúng tôi</a>
+        <a href="#">Liên hệ</a>
+        <a href="#">Chính sách</a>
+        <a href="#">Điều khoản</a>
+
+      </div>
+
+
+      <div class="footer-column">
+
+        <h3>Sản phẩm</h3>
+
+        <a href="#">Vợt cầu lông</a>
+        <a href="#">Giày cầu lông</a>
+        <a href="#">Quần áo</a>
+        <a href="#">Phụ kiện</a>
+
+      </div>
+
+
+      <div class="footer-column">
+
+        <h3>Hỗ trợ</h3>
+
+        <a href="#">Hướng dẫn mua hàng</a>
+        <a href="#">Thanh toán</a>
+        <a href="#">Vận chuyển</a>
+        <a href="#">Đổi trả</a>
+
+      </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+      <div>
+        © 2026 HLT Shop. All rights reserved.
+      </div>
+
+      <div>
+        Badminton Equipment Store
+      </div>
+
+    </div>
+
+  </footer>
+
+</div>
